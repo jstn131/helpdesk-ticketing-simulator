@@ -95,6 +95,19 @@ def create_app():
 
             return redirect(url_for("dashboard")) # After saving, redirect us back to the dashboard.
         return render_template("new_ticket.html") # If we just visit the page, show the new_ticket.html form.
+    
+    @app.route("/tickets/<int:ticket_id>")
+    def ticket_detail(ticket_id):
+        # Get ticket with specified ID or return 404 if not found.
+        ticket = Ticket.query.get_or_404(ticket_id)
+
+        # filter our comments to only show those that match the ticket_id of the ticket
+        # we are viewing. We also order the comments in ascending order based on their created
+        # time so that older tickets are shown first.
+        comments = Comment.query.filter_by(ticket_id=ticket_id)\
+                  .order_by(Comment.created_at.asc()).all()
+        
+        return render_template("ticket_detail.html", ticket=ticket, comments=comments)
 
     return app
 
