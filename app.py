@@ -1,4 +1,4 @@
-from flask import Flask, app, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from database import database, Ticket, Comment
 import os
 
@@ -39,7 +39,7 @@ def create_app():
         open_tickets = Ticket.query.filter_by(status = "Open").count() # Get the number of open tickets in our database.
 
         # Filter for tickets with the In Progress status.
-        in_progess = Ticket.query.filter_by(status = "In Progress").count() # Get the number of in progress tickets in our database.
+        in_progress = Ticket.query.filter_by(status = "In Progress").count() # Get the number of in progress tickets in our database.
 
         # Filter for tickets with resolved status
         resolved_tickets = Ticket.query.filter_by(status = "Resolved").count() # Get the number of closed tickets in our database.
@@ -65,9 +65,10 @@ def create_app():
         return render_template("dashboard.html", 
                                total_tickets=total_tickets,
                                open_tickets=open_tickets, 
-                               in_progress=in_progess, 
+                               in_progress=in_progress, 
                                resolved_tickets=resolved_tickets, 
                                closed_tickets=closed_tickets, 
+                               completed = completed,
                                completion_percentage=completion_percentage,
                                recent_tickets=recent_tickets)
     

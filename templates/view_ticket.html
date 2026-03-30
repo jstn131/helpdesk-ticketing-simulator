@@ -2,50 +2,159 @@
 <html>
   <head>
     <title>Ticket #{{ ticket.id }}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
-    <nav>
-      <a href="/">Dashboard</a>
-      <a href="/tickets/new">New Ticket</a>
-    </nav>
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">HD</div>
+        <div>
+          <div class="brand-name">HelpDesk</div>
+          <div class="brand-sub">// ticketing</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="/" class="nav-link">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+          </svg>
+          Dashboard
+        </a>
+        <a href="/tickets" class="nav-link active">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          All Tickets
+        </a>
+        <a href="/tickets/new" class="nav-link">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+          New Ticket
+        </a>
+      </nav>
+    </aside>
 
-    <!-- Ticket Details -->
-    <h1>Ticket #{{ ticket.id }} — {{ ticket.title }}</h1>
+    <main class="main">
+      <!-- Ticket Header -->
+      <div class="ticket-header">
+        <div>
+          <div class="ticket-id">TICKET-{{ ticket.id }}</div>
+          <div class="ticket-title-text">{{ ticket.title }}</div>
+        </div>
+        <div class="ticket-badges">
+          {% if ticket.status == 'Open' %}
+          <span class="badge badge-open">Open</span>
+          {% elif ticket.status == 'In Progress' %}
+          <span class="badge badge-progress">In Progress</span>
+          {% elif ticket.status == 'Resolved' %}
+          <span class="badge badge-resolved">Resolved</span>
+          {% else %}
+          <span class="badge badge-closed">Closed</span>
+          {% endif %}
+          <span class="badge badge-{{ ticket.priority | lower }}"
+            >{{ ticket.priority }}</span
+          >
+          <a href="/tickets/{{ ticket.id }}/edit" class="btn btn-secondary"
+            >Edit</a
+          >
+        </div>
+      </div>
 
-    <p>Status: {{ ticket.status }}</p>
-    <p>Priority: {{ ticket.priority }}</p>
-    <p>Assigned To: {{ ticket.assigned_to }}</p>
-    <p>Created: {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
-    <p>Updated: {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+      <!-- Meta Info -->
+      <div class="ticket-meta">
+        <div class="meta-item">
+          <div class="meta-label">Assigned To</div>
+          <div class="meta-value">{{ ticket.assigned_to }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Status</div>
+          <div class="meta-value">{{ ticket.status }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Created</div>
+          <div class="meta-value">
+            {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Last Updated</div>
+          <div class="meta-value">
+            {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}
+          </div>
+        </div>
+      </div>
 
-    <h2>Description</h2>
-    <p>{{ ticket.description }}</p>
+      <!-- Description -->
+      <div class="description-card">{{ ticket.description }}</div>
 
-    <a href="/tickets/{{ ticket.id }}/edit">Edit Ticket</a>
+      <!-- Comments -->
+      <div class="comments-section">
+        <div class="section-title">Comments ({{ comments|length }})</div>
 
-    <!-- Comments Section -->
-    <h2>Comments</h2>
+        {% if comments %} {% for comment in comments %}
+        <div class="comment">
+          <div class="comment-note">{{ comment.note }}</div>
+          <div class="comment-time">
+            {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <p style="color: var(--text-muted); font-size: 13px">
+          No comments yet.
+        </p>
+        {% endif %}
 
-    {% if comments %} {% for comment in comments %}
-    <div>
-      <p>{{ comment.note }}</p>
-      <small>{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-    </div>
-    {% endfor %} {% else %}
-    <p>No comments yet.</p>
-    {% endif %}
+        <!-- Add Comment -->
+        <div class="comment-form">
+          <form action="/tickets/{{ ticket.id }}/comment" method="POST">
+            <div class="form-group">
+              <label class="form-label">Add a Comment</label>
+              <textarea
+                name="note"
+                class="form-textarea"
+                placeholder="Add a note or update..."
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+          </form>
+        </div>
+      </div>
 
-    <!-- Add Comment Form -->
-    <h3>Add a Comment</h3>
-    <form action="/tickets/{{ ticket.id }}/comment" method="POST">
-      <textarea
-        name="note"
-        placeholder="Add a note or update..."
-        required
-      ></textarea>
-      <button type="submit">Add Comment</button>
-    </form>
-
-    <a href="/">Back to Dashboard</a>
+      <div style="margin-top: 20px">
+        <a href="/tickets" class="btn btn-secondary">← Back to Tickets</a>
+      </div>
+    </main>
   </body>
 </html>

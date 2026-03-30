@@ -1,67 +1,192 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Helpdesk Dashboard</title>
-</head>
-<body>
-    <h1>Helpdesk Dashboard</h1>
-
-    <!-- Navigation -->
-    <nav>
-        <a href="/">Dashboard</a>
-        <a href="/tickets/new">New Ticket</a>
-    </nav>
-
-    <!-- Stats Row -->
-    <div>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">HD</div>
         <div>
-            <h3>Total</h3>
-            <p>{{ total_tickets }}</p>
+          <div class="brand-name">HelpDesk</div>
+          <div class="brand-sub">// ticketing</div>
         </div>
-        <div>
-            <h3>Open</h3>
-            <p>{{ open_tickets }}</p>
-        </div>
-        <div>
-            <h3>In Progress</h3>
-            <p>{{ in_progress }}</p>
-        </div>
-        <div>
-            <h3>Resolved</h3>
-            <p>{{ resolved_tickets }}</p>
-        </div>
-    </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="/" class="nav-link active">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+          </svg>
+          Dashboard
+        </a>
+        <a href="/tickets" class="nav-link">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          All Tickets
+        </a>
+        <a href="/tickets/new" class="nav-link">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+          New Ticket
+        </a>
+      </nav>
+    </aside>
 
-    <!-- Completion percentage -->
-    <h2>Completion: {{ completion_percentage }}%</h2>
+    <main class="main">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Overview of all helpdesk activity</p>
+        </div>
+        <a href="/tickets/new" class="btn btn-primary">+ New Ticket</a>
+      </div>
 
-    <!-- Recent Tickets Table -->
-    <h2>Recent Tickets</h2>
-    <table>
-        <thead>
-            <tr>
+      <!-- Stats Row -->
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-label">Total</div>
+          <div class="stat-value">{{ total_tickets }}</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Open</div>
+          <div class="stat-value">{{ open_tickets }}</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">In Progress</div>
+          <div class="stat-value">{{ in_progress }}</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Resolved</div>
+          <div class="stat-value">{{ resolved_tickets }}</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Recent Tickets Table -->
+        <div class="table-card">
+          <div class="table-header">
+            <span class="table-title">Recent Tickets</span>
+            <a href="/tickets" class="btn btn-secondary">View All</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
                 <th>ID</th>
                 <th>Title</th>
                 <th>Priority</th>
                 <th>Status</th>
                 <th>Assigned To</th>
                 <th>Created</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ticket in recent_tickets %}
-            <tr>
-                <td><a href="/tickets/{{ ticket.id }}">{{ ticket.id }}</a></td>
-                <td>{{ ticket.title }}</td>
-                <td>{{ ticket.priority }}</td>
-                <td>{{ ticket.status }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ticket in recent_tickets %}
+              <tr>
+                <td><a href="/tickets/{{ ticket.id }}">#{{ ticket.id }}</a></td>
+                <td>
+                  <a href="/tickets/{{ ticket.id }}">{{ ticket.title }}</a>
+                </td>
+                <td>
+                  <span class="badge badge-{{ ticket.priority | lower }}">
+                    {{ ticket.priority }}
+                  </span>
+                </td>
+                <td>
+                  {% if ticket.status == 'Open' %}
+                  <span class="badge badge-open">Open</span>
+                  {% elif ticket.status == 'In Progress' %}
+                  <span class="badge badge-progress">In Progress</span>
+                  {% elif ticket.status == 'Resolved' %}
+                  <span class="badge badge-resolved">Resolved</span>
+                  {% else %}
+                  <span class="badge badge-closed">Closed</span>
+                  {% endif %}
+                </td>
                 <td>{{ ticket.assigned_to }}</td>
                 <td>{{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
-    <a href="/tickets/new">Create New Ticket</a>
-</body>
+        <!-- Donut Chart -->
+        <div class="chart-card">
+          <div class="chart-title">Completion Rate</div>
+          <div class="chart-wrap">
+            <canvas id="completionChart"></canvas>
+            <div class="chart-center">
+              <div class="chart-pct">{{ completion_percentage }}%</div>
+              <div class="chart-pct-label">done</div>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #10b981"></div>
+              <span class="legend-label">Completed</span>
+              <span class="legend-value">{{ completed }}</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #e5e7eb"></div>
+              <span class="legend-label">Remaining</span>
+              <span class="legend-value">{{ total_tickets - completed }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const ctx = document.getElementById('completionChart').getContext('2d');
+      new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              datasets: [{
+                  data: [{{ completed }}, {{ total_tickets - completed }}],
+                  backgroundColor: ['#10b981', '#e5e7eb'],
+                  borderWidth: 0,
+                  borderRadius: 4
+              }]
+          },
+          options: {
+              cutout: '78%',
+              plugins: { legend: { display: false }, tooltip: { enabled: true } }
+          }
+      });
+    </script>
+  </body>
 </html>

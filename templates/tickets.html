@@ -2,84 +2,118 @@
 <html>
 <head>
     <title>All Tickets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav>
-        <a href="/">Dashboard</a>
-        <a href="/tickets">All Tickets</a>
-        <a href="/tickets/new">New Ticket</a>
-    </nav>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">HD</div>
+            <div>
+                <div class="brand-name">HelpDesk</div>
+                <div class="brand-sub">// ticketing</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">Main</div>
+            <a href="/" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Dashboard
+            </a>
+            <a href="/tickets" class="nav-link active">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                All Tickets
+            </a>
+            <a href="/tickets/new" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                New Ticket
+            </a>
+        </nav>
+    </aside>
 
-    <h1>All Tickets</h1>
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">All Tickets</h1>
+                <p class="page-subtitle">Search, filter and manage tickets</p>
+            </div>
+            <a href="/tickets/new" class="btn btn-primary">+ New Ticket</a>
+        </div>
 
-    <!-- Search and Filter Form -->
-    <!-- Using GET so filters appear in URL and are shareable! -->
-    <form action="/tickets" method="GET">
-        <input type="text" name="search" 
-               placeholder="Search tickets..." 
-               value="{{ search }}">
+        <!-- Search and Filter -->
+        <form action="/tickets" method="GET" class="search-bar">
+            <input type="text" name="search" class="search-input"
+                   placeholder="Search tickets..." value="{{ search }}">
+            <select name="priority" class="filter">
+                <option value="">All Priorities</option>
+                <option value="Low"      {{ 'selected' if priority == 'Low' }}>Low</option>
+                <option value="Medium"   {{ 'selected' if priority == 'Medium' }}>Medium</option>
+                <option value="High"     {{ 'selected' if priority == 'High' }}>High</option>
+                <option value="Critical" {{ 'selected' if priority == 'Critical' }}>Critical</option>
+            </select>
+            <select name="status" class="filter">
+                <option value="">All Statuses</option>
+                <option value="Open"        {{ 'selected' if status == 'Open' }}>Open</option>
+                <option value="In Progress" {{ 'selected' if status == 'In Progress' }}>In Progress</option>
+                <option value="Resolved"    {{ 'selected' if status == 'Resolved' }}>Resolved</option>
+                <option value="Closed"      {{ 'selected' if status == 'Closed' }}>Closed</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="/tickets" class="btn btn-secondary">Clear</a>
+        </form>
 
-        <select name="priority">
-            <option value="">All Priorities</option>
-            <option value="Low" 
-                {{ 'selected' if priority == 'Low' }}>Low</option>
-            <option value="Medium" 
-                {{ 'selected' if priority == 'Medium' }}>Medium</option>
-            <option value="High" 
-                {{ 'selected' if priority == 'High' }}>High</option>
-            <option value="Critical" 
-                {{ 'selected' if priority == 'Critical' }}>Critical</option>
-        </select>
+        <div class="results-count">{{ tickets|length }} tickets found</div>
 
-        <select name="status">
-            <option value="">All Statuses</option>
-            <option value="Open" 
-                {{ 'selected' if status == 'Open' }}>Open</option>
-            <option value="In Progress" 
-                {{ 'selected' if status == 'In Progress' }}>In Progress</option>
-            <option value="Resolved" 
-                {{ 'selected' if status == 'Resolved' }}>Resolved</option>
-            <option value="Closed" 
-                {{ 'selected' if status == 'Closed' }}>Closed</option>
-        </select>
-
-        <button type="submit">Search</button>
-        <a href="/tickets">Clear</a>
-    </form>
-
-    <!-- Results count -->
-    <p>Showing {{ tickets|length }} tickets</p>
-
-    <!-- Tickets Table -->
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Assigned To</th>
-                <th>Created</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if tickets %}
-                {% for ticket in tickets %}
-                <tr>
-                    <td><a href="/tickets/{{ ticket.id }}">#{{ ticket.id }}</a></td>
-                    <td><a href="/tickets/{{ ticket.id }}">{{ ticket.title }}</a></td>
-                    <td>{{ ticket.priority }}</td>
-                    <td>{{ ticket.status }}</td>
-                    <td>{{ ticket.assigned_to }}</td>
-                    <td>{{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="6">No tickets found.</td>
-                </tr>
-            {% endif %}
-        </tbody>
-    </table>
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Assigned To</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if tickets %}
+                        {% for ticket in tickets %}
+                        <tr>
+                            <td><a href="/tickets/{{ ticket.id }}">#{{ ticket.id }}</a></td>
+                            <td><a href="/tickets/{{ ticket.id }}">{{ ticket.title }}</a></td>
+                            <td>
+                                <span class="badge badge-{{ ticket.priority | lower }}">
+                                    {{ ticket.priority }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if ticket.status == 'Open' %}
+                                    <span class="badge badge-open">Open</span>
+                                {% elif ticket.status == 'In Progress' %}
+                                    <span class="badge badge-progress">In Progress</span>
+                                {% elif ticket.status == 'Resolved' %}
+                                    <span class="badge badge-resolved">Resolved</span>
+                                {% else %}
+                                    <span class="badge badge-closed">Closed</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ ticket.assigned_to }}</td>
+                            <td>{{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <p>No tickets found.</p>
+                                    <a href="/tickets/new" class="btn btn-primary">Create your first ticket</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
 </body>
 </html>

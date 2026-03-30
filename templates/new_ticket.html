@@ -1,40 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>New Ticket</title>
-</head>
-<body>
-    <h1>Create New Ticket</h1>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">HD</div>
+        <div>
+          <div class="brand-name">HelpDesk</div>
+          <div class="brand-sub">// ticketing</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="/" class="nav-link">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+          </svg>
+          Dashboard
+        </a>
+        <a href="/tickets" class="nav-link">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          All Tickets
+        </a>
+        <a href="/tickets/new" class="nav-link active">
+          <svg
+            class="nav-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+          New Ticket
+        </a>
+      </nav>
+    </aside>
 
-    <form action="/tickets/new" method="POST">
+    <main class="main">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Create New Ticket</h1>
+          <p class="page-subtitle">Submit a new support request</p>
+        </div>
+      </div>
 
-        <label>Title</label>
-        <input type="text" name="title" 
-               placeholder="Short description of the issue" required>
-
-        <label>Description</label>
-        <textarea name="description" 
-                  placeholder="Full details of the issue" required></textarea>
-
-        <label>Priority</label>
-        <select name="priority">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-            <option value="Critical">Critical</option>
-        </select>
-
-        <label>Assign To</label>
-        <select name="assigned_to">
-            <option value="Unassigned">Unassigned</option>
-            <option value="Agent 1">Agent 1</option>
-            <option value="Agent 2">Agent 2</option>
-            <option value="Agent 3">Agent 3</option>
-        </select>
-
-        <button type="submit">Create Ticket</button>
-    </form>
-
-    <a href="/">Back to Dashboard</a>
-</body>
+      <div class="form-card">
+        <form action="/tickets/new" method="POST">
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input
+              type="text"
+              name="title"
+              class="form-input"
+              placeholder="Short description of the issue"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              name="description"
+              class="form-textarea"
+              placeholder="Full details of the issue"
+              required
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select name="priority" class="form-select">
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assign To</label>
+            <select name="assigned_to" class="form-select">
+              <option value="Unassigned">Unassigned</option>
+              <option value="Agent 1">Agent 1</option>
+              <option value="Agent 2">Agent 2</option>
+              <option value="Agent 3">Agent 3</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Ticket</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
 </html>
