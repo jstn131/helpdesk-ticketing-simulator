@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Ticket</title>
+</head>
+<body>
+    <h1>Create New Ticket</h1>
+
+    <form action="/tickets/new" method="POST">
+
+        <label>Title</label>
+        <input type="text" name="title" 
+               placeholder="Short description of the issue" required>
+
+        <label>Description</label>
+        <textarea name="description" 
+                  placeholder="Full details of the issue" required></textarea>
+
+        <label>Priority</label>
+        <select name="priority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+        </select>
+
+        <label>Assign To</label>
+        <select name="assigned_to">
+            <option value="Unassigned">Unassigned</option>
+            <option value="Agent 1">Agent 1</option>
+            <option value="Agent 2">Agent 2</option>
+            <option value="Agent 3">Agent 3</option>
+        </select>
+
+        <button type="submit">Create Ticket</button>
+    </form>
+
+    <a href="/">Back to Dashboard</a>
+</body>
+</html>
+```
+
+---
+
+Add both of those, run `python app.py`, visit:
+```
+http://127.0.0.1:5000/tickets/new
