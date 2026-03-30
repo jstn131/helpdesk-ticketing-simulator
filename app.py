@@ -33,14 +33,44 @@ def create_app():
     # This is simple. Whenever we visit the root URL
     @app.route("/") 
     def dashboard():    # Run this function.
+        total_tickets = Ticket.query.count() # Get the total number of tickets in our database.
+        
+        # Here we use the filter_by method to search for any tickets that have the open status.
+        open_tickets = Ticket.query.filter_by(status = "Open").count() # Get the number of open tickets in our database.
 
-        # TODO: Remove this test code later.
-        # TEST TO CHECK IF OUR TICKET IS CREATED PROPERLY
-        tickets = Ticket.query.all()
-        print(tickets)  
+        # Filter for tickets with the In Progress status.
+        in_progess = Ticket.query.filter_by(status = "In Progress").count() # Get the number of in progress tickets in our database.
 
+        # Filter for tickets with resolved status
+        resolved_tickets = Ticket.query.filter_by(status = "Resolved").count() # Get the number of closed tickets in our database.
 
-        return render_template("dashboard.html") # display dashboard.html.
+        # Filter for tickets with closed status
+        closed_tickets = Ticket.query.filter_by(status = "Closed").count() # Get the number of closed tickets in our database.
+
+        # We will use this following function to ensure that our dashboard will 
+        # have a graph display the percentage of completed tickets that we have.
+
+        completed = resolved_tickets + closed_tickets # Calculate number of tickets no longer in progress
+
+        if total_tickets > 0: # If we have any tickets at all, then calculate the percentage of completed tickets.
+            completion_percentage = ((completed / total_tickets) * 100) 
+        else: 
+            completion_percentage = 0 # If we have no tickets, then the percentage of completed tickets is 0.
+
+        # Display the ten most recent tickets on dashboard.
+
+        # We are using the order_by method to sort our tickets by creation date
+        recent_tickets = Ticket.query.order_by(Ticket.created_at.desc()).limit(10).all()
+
+        # Updated return: Return all types of tickets and completed percentage alongside our dashboard.html display.
+        return render_template("dashboard.html", 
+                               total_tickets=total_tickets,
+                               open_tickets=open_tickets, 
+                               in_progress=in_progess, 
+                               resolved_tickets=resolved_tickets, 
+                               closed_tickets=closed_tickets, 
+                               completion_percentage=completion_percentage)
+    
 
 
     # If we visit the URL /tickets/new, run this function. 

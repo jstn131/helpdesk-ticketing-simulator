@@ -1,10 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Helpdesk</title>
+    <title>Helpdesk Dashboard</title>
 </head>
 <body>
     <h1>Helpdesk Dashboard</h1>
-    <p>It works!</p>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="/">Dashboard</a>
+        <a href="/tickets/new">New Ticket</a>
+    </nav>
+
+    <!-- Stats Row -->
+    <div>
+        <div>
+            <h3>Total</h3>
+            <p>{{ total_tickets }}</p>
+        </div>
+        <div>
+            <h3>Open</h3>
+            <p>{{ open_tickets }}</p>
+        </div>
+        <div>
+            <h3>In Progress</h3>
+            <p>{{ in_progress }}</p>
+        </div>
+        <div>
+            <h3>Resolved</h3>
+            <p>{{ resolved_tickets }}</p>
+        </div>
+    </div>
+
+    <!-- Completion percentage -->
+    <h2>Completion: {{ completion_percentage }}%</h2>
+
+    <!-- Recent Tickets Table -->
+    <h2>Recent Tickets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in recent_tickets %}
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.title }}</td>
+                <td>{{ ticket.priority }}</td>
+                <td>{{ ticket.status }}</td>
+                <td>{{ ticket.assigned_to }}</td>
+                <td>{{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="/tickets/new">Create New Ticket</a>
 </body>
 </html>
