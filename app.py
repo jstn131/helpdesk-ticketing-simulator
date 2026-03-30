@@ -33,7 +33,15 @@ def create_app():
     # This is simple. Whenever we visit the root URL
     @app.route("/") 
     def dashboard():    # Run this function.
+
+        # TODO: Remove this test code later.
+        # TEST TO CHECK IF OUR TICKET IS CREATED PROPERLY
+        tickets = Ticket.query.all()
+        print(tickets)  
+
+
         return render_template("dashboard.html") # display dashboard.html.
+
 
     # If we visit the URL /tickets/new, run this function. 
     # POST will send data to requested body.
