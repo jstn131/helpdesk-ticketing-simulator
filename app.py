@@ -107,7 +107,7 @@ def create_app():
         comments = Comment.query.filter_by(ticket_id=ticket_id)\
                   .order_by(Comment.created_at.asc()).all()
         
-        return render_template("ticket_detail.html", ticket=ticket, comments=comments)
+        return render_template("view_ticket.html", ticket=ticket, comments=comments)
 
     return app
 
