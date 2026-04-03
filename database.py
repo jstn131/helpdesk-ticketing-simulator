@@ -67,6 +67,7 @@ class Comment(database.Model):
 
     note = database.Column(database.Text, nullable = False)
 
+    # created_at tracks when the comment was made, giving it the current timestap by default.
     created_at = database.Column(database.DateTime, default = datetime.utcnow)
     def __repr__(self):
         return f"<Comment {self.id} on Ticket {self.ticket_id}>"
